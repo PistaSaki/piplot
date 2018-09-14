@@ -8,5 +8,5 @@ setup(
     author_email = 'author@gmail.com',
     description = 'Description of my package',
     packages = find_packages(),    
-    install_requires = ["matplotlib"],
+    install_requires = ["matplotlib", "IPython", "ipywidgets", "scipy", "pandas"],
 )
