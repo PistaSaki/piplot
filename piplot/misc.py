@@ -231,7 +231,7 @@ def plot_discrete_model_vs_data_histogram(
 
     ## the bars of the plot will represent observations
     pl.bar(
-        left = np.arange(n_bars), #+ bar_width,
+        x = np.arange(n_bars), #+ bar_width,
         height = obs_y,
         width = bar_width,
         color = color,
@@ -240,7 +240,7 @@ def plot_discrete_model_vs_data_histogram(
     
     ## From the model we keep visible only the orror bars
     pl.bar(
-        left = np.arange(n_bars),
+        x = np.arange(n_bars),
         height = model_y,
         width = bar_width,
         yerr = model_std * err_bar_coef, 
