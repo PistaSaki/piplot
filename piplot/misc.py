@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 
 from IPython.display import display
 import ipywidgets as ipw
@@ -279,8 +280,26 @@ def plot_model_quants_vs_data_histogram(
     ## our cummulative distribution functions `cdfs`  will count the 
     ## boundary with coefficient 1/2 (not 1 as usual)
     cdfs = pdfs.cumsum(axis = -1) - pdfs/2
+    if not (-eps < cdfs).all():
+        warnings.warn(
+            f"(in method plot_model_quants_vs_data_histogram) "
+            "cdf shoud be between 0, 1. The minimum {cdfs.min()} "
+            "is attained for the batch-index {cdfs.min(axis = 1).argmin()}."
+        )
 
+    if not (cdfs < 1 + eps).all():
+        warnings.warn(
+            f"(in method plot_model_quants_vs_data_histogram) "
+            "cdf shoud be between 0, 1. The maximum {cdfs.max()} "
+            "is attained for the batch index {cdfs.max(axis = 1).argmax()}."
+        )
+        
+    cdfs = np.maximum(0, np.minimum(cdfs, 1))
+    
     def cut_array(x, bins):
+        """The same thing as pandas.cut, only accepts higher dimensional arrays.
+        (pandas.cut accepts only one-dimesional x)
+        """
         sh = x.shape
         return np.reshape(
             pd.cut(x.flat, bins, labels = False),
@@ -290,10 +309,7 @@ def plot_model_quants_vs_data_histogram(
     bin_indicators = cut_array(cdfs, quant_bins)
     obs_bins = cut_array(cdfs[np.arange(n_obs), obs], quant_bins)
 
-
-
     assert not np.any(np.isnan(bin_indicators))
-
     
     bin_probas = np.zeros([n_obs, n_bins])
     for i in range(n_obs):
